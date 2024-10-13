@@ -29,14 +29,13 @@ export default function useWeather() {
     const [notFound, setNotFound] = useState(false)
 
     const fetchWeather = async (search: SearchType) => {
-        const appId = import.meta.env.VITE_API_KEY
+        const appId = '3b342fe229d4b7adcda88a15f0893213';
         setLoading(true)
         setWeather(initialState)
         try {
             const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${search.city},${search.country}&appid=${appId}`
             const {data} = await axios(geoUrl)
             
-            // Comprobar si existe
             if(!data[0]) {
                 setNotFound(true)
                 return
@@ -46,33 +45,12 @@ export default function useWeather() {
             const lon = data[0].lon
 
             const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${appId}`
-            // Castear el type
-            // const {data: weatherResult} = await axios<Weather>(weatherUrl)
-            // console.log(weatherResult.temp)
-            // console.log(weatherResult.name)
-
-            // Type Guards
-            // const {data: weatherResult} = await axios(weatherUrl)
-            // const result = isWeatherResponse(weatherResult)
-            // if(result) {
-            //     console.log(weatherResult.name)
-            // } else {
-            //     console.log('Respuesta mal formada')
-            // }
-
-            // Zod
+            
             const {data: weatherResult} = await axios(weatherUrl)
             const result = Weather.safeParse(weatherResult)
             if(result.success) {
                 setWeather(result.data)
             }
-
-            // Valibot
-            // const {data: weatherResult} = await axios(weatherUrl)
-            // const result = parse(WeatherSchema, weatherResult)
-            // if(result) {
-            //     console.log(result.name)
-            // }
 
         } catch (error) {
             console.log(error)
